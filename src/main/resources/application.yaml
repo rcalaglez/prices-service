@@ -1,3 +1,10 @@
 spring:
   application:
     name: prices-service
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    url: /openapi.yaml
+  api-docs:
+    enabled: true

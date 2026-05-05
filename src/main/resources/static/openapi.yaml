@@ -1,0 +1,125 @@
+openapi: 3.0.3
+info:
+  title: Inditex Price Query API
+  version: 1.0.0
+  description: API for querying the applicable product price by date, product and brand.
+
+servers:
+  - url: /
+    description: Current server
+
+paths:
+  /api/v1/prices:
+    get:
+      tags:
+        - Prices
+      summary: Get applicable price
+      description: Returns the applicable price for a product, brand and application date.
+      operationId: getApplicablePrice
+      parameters:
+        - name: applicationDate
+          in: query
+          required: true
+          description: Date and time when the price must be applied.
+          schema:
+            type: string
+            format: date-time
+            example: "2020-06-14T10:00:00"
+        - name: productId
+          in: query
+          required: true
+          description: Product identifier.
+          schema:
+            type: integer
+            format: int64
+            example: 35455
+        - name: brandId
+          in: query
+          required: true
+          description: Brand identifier.
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        "200":
+          description: Applicable price found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PriceResponse"
+              examples:
+                standardPrice:
+                  value:
+                    productId: 35455
+                    brandId: 1
+                    priceList: 1
+                    startDate: "2020-06-14T00:00:00"
+                    endDate: "2020-12-31T23:59:59"
+                    price: 35.50
+                    currency: "EUR"
+        "400":
+          description: Invalid request parameters.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Applicable price not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  schemas:
+    PriceResponse:
+      type: object
+      required:
+        - productId
+        - brandId
+        - priceList
+        - startDate
+        - endDate
+        - price
+        - currency
+      properties:
+        productId:
+          type: integer
+          format: int64
+          example: 35455
+        brandId:
+          type: integer
+          format: int64
+          example: 1
+        priceList:
+          type: integer
+          example: 1
+        startDate:
+          type: string
+          format: date-time
+          example: "2020-06-14T00:00:00"
+        endDate:
+          type: string
+          format: date-time
+          example: "2020-12-31T23:59:59"
+        price:
+          type: number
+          format: double
+          example: 35.50
+        currency:
+          type: string
+          example: "EUR"
+
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          example: "PRICE_NOT_FOUND"
+        message:
+          type: string
+          example: "No applicable price found"
