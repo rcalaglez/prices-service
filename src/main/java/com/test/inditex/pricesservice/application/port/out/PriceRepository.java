@@ -8,5 +8,5 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface PriceRepository {
-    List<Price> findCandidates(LocalDateTime applicationDate, ProductId productId, BrandId brandId);
+    List<Price> findCandidates(LocalDateTime applicationDate, Long productId, Long brandId);
 }

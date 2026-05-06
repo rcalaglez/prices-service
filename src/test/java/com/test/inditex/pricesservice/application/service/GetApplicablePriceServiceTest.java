@@ -35,7 +35,7 @@ class GetApplicablePriceServiceTest {
         var basePrice = price(PriceList.of(1), Priority.of(0), "35.50");
         var priorityPrice = price(PriceList.of(2), Priority.of(1), "25.45");
 
-        given(priceRepository.findCandidates(applicationDate, productId, brandId))
+        given(priceRepository.findCandidates(applicationDate, productId.value(), brandId.value()))
                 .willReturn(List.of(basePrice, priorityPrice));
 
         // Act

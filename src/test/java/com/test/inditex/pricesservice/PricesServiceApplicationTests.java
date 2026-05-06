@@ -8,9 +8,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @SpringBootTest
 class PricesServiceApplicationTests {
 
-    @MockitoBean
-    private PriceRepository priceRepository;
-
     @Test
     void contextLoads() {
     }

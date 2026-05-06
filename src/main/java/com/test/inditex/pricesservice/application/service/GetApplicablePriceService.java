@@ -20,8 +20,8 @@ public class GetApplicablePriceService implements GetApplicablePriceUseCase {
     public ApplicablePriceResult getApplicablePrice(GetApplicablePriceQuery query) {
         var candidates = priceRepository.findCandidates(
                 query.applicationDate(),
-                query.productId(),
-                query.brandId()
+                query.productId().value(),
+                query.brandId().value()
         );
 
         var selectedPrice = new ApplicablePrices(candidates).highestPriority();
