@@ -20,6 +20,10 @@ public record Money(BigDecimal amount, Currency currency) {
     }
 
     public static Money of(BigDecimal amount, String currencyCode) {
+        if (amount == null) {
+            throw new IllegalArgumentException("Amount is required");
+        }
+
         return new Money(amount, Currency.getInstance(currencyCode));
     }
 }
