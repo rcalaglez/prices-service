@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Inditex Price Query API
+  title: Price Query API
   version: 1.0.0
   description: API for querying the applicable product price by date, product and brand.
 

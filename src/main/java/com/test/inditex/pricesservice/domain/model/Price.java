@@ -1,6 +1,5 @@
 package com.test.inditex.pricesservice.domain.model;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Price {
@@ -37,14 +36,6 @@ public class Price {
             Money money
     ) {
         return new Price(brandId, productId, priceList, validity, priority, money);
-    }
-
-    public boolean appliesAt(LocalDateTime applicationDate) {
-        return validity.contains(applicationDate);
-    }
-
-    public boolean hasHigherPriorityThan(Price other) {
-        return this.priority.isHigherThan(other.priority);
     }
 
     public BrandId brandId() {

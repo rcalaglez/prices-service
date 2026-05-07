@@ -15,8 +15,4 @@ public record Priority(Integer value) implements Comparable<Priority> {
     public int compareTo(Priority other) {
         return this.value.compareTo(other.value);
     }
-
-    public boolean isHigherThan(Priority other) {
-        return this.compareTo(other) > 0;
-    }
 }
