@@ -1,6 +1,8 @@
 package com.test.inditex.pricesservice.infrastructure.adapter.in.web;
 
 import com.test.inditex.pricesservice.application.port.in.GetApplicablePriceUseCase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +18,8 @@ public class PriceController {
 
     private final GetApplicablePriceUseCase getApplicablePriceUseCase;
     private final PriceRestMapper mapper;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PriceController.class);
 
     public PriceController(
             GetApplicablePriceUseCase getApplicablePriceUseCase,
@@ -37,10 +41,29 @@ public class PriceController {
             @RequestParam
             Long brandId
     ) {
+
+        LOGGER.info(
+                "Received request to get applicable price. applicationDate={}, productId={}, brandId={}",
+                applicationDate,
+                productId,
+                brandId
+        );
+
         var query = mapper.toQuery(applicationDate, productId, brandId);
         var result = getApplicablePriceUseCase.getApplicablePrice(query);
+        var response = mapper.toResponse(result);
 
-        return ResponseEntity.ok(mapper.toResponse(result));
+        LOGGER.info(
+                "Applicable price response resolved. applicationDate={}, productId={}, brandId={}, priceList={}, price={}, currency={}",
+                applicationDate,
+                response.productId(),
+                response.brandId(),
+                response.priceList(),
+                response.price(),
+                response.currency()
+        );
+
+        return ResponseEntity.ok(response);
     }
 
 }

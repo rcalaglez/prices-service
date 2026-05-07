@@ -5,16 +5,18 @@ import com.test.inditex.pricesservice.application.port.out.PriceRepository;
 import com.test.inditex.pricesservice.application.query.GetApplicablePriceQuery;
 import com.test.inditex.pricesservice.application.result.ApplicablePriceResult;
 import com.test.inditex.pricesservice.domain.model.ApplicablePrices;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GetApplicablePriceService implements GetApplicablePriceUseCase {
 
-    private final PriceRepository priceRepository;
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetApplicablePriceService.class);
 
+    private final PriceRepository priceRepository;
 
     public GetApplicablePriceService(PriceRepository priceRepository) {
         this.priceRepository = priceRepository;
     }
-
 
     @Override
     public ApplicablePriceResult getApplicablePrice(GetApplicablePriceQuery query) {
@@ -24,7 +26,17 @@ public class GetApplicablePriceService implements GetApplicablePriceUseCase {
                 query.brandId().value()
         );
 
+        LOGGER.debug(
+                "Applicable price candidates found. candidatesCount={}",
+                candidates.size()
+        );
+
         var selectedPrice = new ApplicablePrices(candidates).highestPriority();
+
+        LOGGER.info(
+                "Applicable price selected: {}",
+                selectedPrice.toString()
+        );
 
         return new ApplicablePriceResult(
                 selectedPrice.productId(),
