@@ -34,8 +34,12 @@ public class GetApplicablePriceService implements GetApplicablePriceUseCase {
         var selectedPrice = new ApplicablePrices(candidates).highestPriority();
 
         LOGGER.info(
-                "Applicable price selected: {}",
-                selectedPrice.toString()
+                "Applicable price selected: productId={}, brandId={}, priceList={}, price={}, currency={}",
+                selectedPrice.productId().value(),
+                selectedPrice.brandId().value(),
+                selectedPrice.priceList().value(),
+                selectedPrice.money().amount(),
+                selectedPrice.money().currency().getCurrencyCode()
         );
 
         return new ApplicablePriceResult(
