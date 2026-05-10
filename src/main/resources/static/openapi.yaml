@@ -32,6 +32,7 @@ paths:
           schema:
             type: integer
             format: int64
+            minimum: 1
             example: 35455
         - name: brandId
           in: query
@@ -40,6 +41,7 @@ paths:
           schema:
             type: integer
             format: int64
+            minimum: 1
             example: 1
       responses:
         "200":
@@ -58,18 +60,36 @@ paths:
                     endDate: "2020-12-31T23:59:59"
                     price: 35.50
                     currency: "EUR"
+
         "400":
           description: Invalid request parameters.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+              example:
+                code: "INVALID_REQUEST"
+                message: "Invalid request parameter"
+
         "404":
           description: Applicable price not found.
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+              example:
+                code: "PRICE_NOT_FOUND"
+                message: "No applicable price found"
+
+        "500":
+          description: Unexpected internal server error.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                code: "INTERNAL_SERVER_ERROR"
+                message: "Unexpected error"
 
 components:
   schemas:
