@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
-@DisplayName("Application - Unit - Get applicable price")
+@DisplayName("Application - Get applicable price")
 @ExtendWith(MockitoExtension.class)
 class GetApplicablePriceServiceTest {
 

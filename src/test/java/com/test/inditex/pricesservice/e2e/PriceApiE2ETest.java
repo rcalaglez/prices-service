@@ -1,7 +1,7 @@
 package com.test.inditex.pricesservice.e2e;
 
+import com.test.inditex.pricesservice.infrastructure.adapter.in.web.ErrorResponse;
 import com.test.inditex.pricesservice.infrastructure.adapter.in.web.PriceResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -21,7 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 @Sql("/test-e2e/prices.sql")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@Slf4j
 class PriceApiE2ETest {
 
     @LocalServerPort
@@ -135,12 +134,7 @@ class PriceApiE2ETest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
         assertThat(response.getBody()).isNotNull();
 
-        log.info("Request params: applicationDate {}, productId {}, brandId {} ",
-                applicationDate,
-                productId,
-                brandId);
         var body = response.getBody();
-        log.info("Response: {}", body);
 
         assertThat(body.productId()).isEqualTo(productId);
         assertThat(body.brandId()).isEqualTo(brandId);
@@ -149,5 +143,102 @@ class PriceApiE2ETest {
         assertThat(body.endDate()).isEqualTo(LocalDateTime.parse(expectedEndDate));
         assertThat(body.price()).isEqualByComparingTo(new BigDecimal(expectedPrice));
         assertThat(body.currency()).isEqualTo("EUR");
+    }
+
+    @Test
+    @Order(6)
+    @DisplayName("Should return 404 when no applicable price exists")
+    void shouldReturnNotFoundWhenNoApplicablePriceExists() {
+        // Arrange
+        var applicationDate = "2020-06-14T10:00:00";
+        var productId = 99999L;
+        var brandId = 1L;
+
+        // Act & Assert
+        assertErrorResponse(
+                applicationDate,
+                productId,
+                brandId,
+                404,
+                "PRICE_NOT_FOUND",
+                "No applicable price found"
+        );
+    }
+
+    @Test
+    @Order(7)
+    @DisplayName("Should return 400 when data has invalid format")
+    void shouldReturnBadRequestWhenApplicationDateHasInvalidFormat() {
+        // Arrange
+        var applicationDate = "invalid-date";
+        var productId = 35455L;
+        var brandId = 1L;
+
+        // Act & Assert
+        assertErrorResponse(
+                applicationDate,
+                productId,
+                brandId,
+                400,
+                "INVALID_REQUEST",
+                "Invalid request parameter"
+        );
+    }
+
+    @Test
+    @Order(8)
+    @DisplayName("Should return 400 when required data is missing")
+    void shouldReturnBadRequestWhenRequiredIsMissing() {
+        // Arrange
+        var applicationDate = "2020-06-14T10:00:00";
+        Long productId = null;
+        var brandId = 1L;
+
+        // Act & Assert
+        assertErrorResponse(
+                applicationDate,
+                productId,
+                brandId,
+                400,
+                "INVALID_REQUEST",
+                "Invalid request parameter"
+        );
+    }
+
+    private void assertErrorResponse(
+            String applicationDate,
+            Long productId,
+            Long brandId,
+            int expectedStatus,
+            String expectedCode,
+            String expectedMessage
+    ) {
+        // Act
+        var response = restClient.get()
+                .uri(uriBuilder -> {
+                    var builder = uriBuilder
+                            .path("/api/v1/prices")
+                            .queryParam("applicationDate", applicationDate);
+
+                    if (productId != null) {
+                        builder.queryParam("productId", productId);
+                    }
+
+                    if (brandId != null) {
+                        builder.queryParam("brandId", brandId);
+                    }
+
+                    return builder.build();
+                })
+                .retrieve()
+                .onStatus(HttpStatusCode::isError, (request, clientResponse) -> {
+                })
+                .toEntity(ErrorResponse.class);
+
+        // Assert
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(expectedStatus));
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().code()).isEqualTo(expectedCode);
+        assertThat(response.getBody().message()).isEqualTo(expectedMessage);
     }
 }

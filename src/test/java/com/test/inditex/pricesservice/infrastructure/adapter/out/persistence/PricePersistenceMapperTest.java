@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("Infrastructure - Unit - Price persistence mapper")
+@DisplayName("Infrastructure - Price persistence mapper")
 class PricePersistenceMapperTest {
 
     private final PricePersistenceMapper mapper = new PricePersistenceMapper();
